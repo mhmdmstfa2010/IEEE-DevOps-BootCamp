@@ -1,5 +1,18 @@
 # Example Voting App
 
+## DevOps Bootcamp Edition
+
+This repository is prepared as a full beginner-friendly workshop demo for:
+
+- Docker
+- Docker Compose
+- Docker Hub
+- Kubernetes (kind)
+- GitHub Actions (CI)
+- Argo CD (GitOps CD)
+
+Start with `BOOTCAMP.md` for the full step-by-step training flow.
+
 A simple distributed application running across multiple Docker containers.
 
 ## Getting started

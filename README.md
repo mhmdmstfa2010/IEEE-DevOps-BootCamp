@@ -321,20 +321,49 @@ kubectl get cronjobs
 
 ## Day 3 - CI/CD and GitOps
 
-### 1) CI with GitHub Actions
+### 1) Traditional CI/CD pipeline (direct deploy)
 
-1. Push this repo to your GitHub account.
-2. Add repository secrets:
-   - `DOCKERHUB_USERNAME`
-   - `DOCKERHUB_TOKEN`
-3. Push to `main`.
-4. Check Actions tab and verify the workflow publishes images.
+Flow:
 
-Starter workflow included at:
+1. Developer pushes code
+2. GitHub Actions builds and pushes images
+3. Same pipeline deploys directly to cluster using `kubectl set image`
 
-- `.github/workflows/bootcamp-ci.yml`
+Workflow:
 
-### 2) CD with Argo CD (GitOps)
+- `.github/workflows/traditional-cicd.yml`
+
+Required GitHub secrets:
+
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
+- `KUBE_CONFIG_DATA` (base64 of kubeconfig file)
+
+Generate `KUBE_CONFIG_DATA`:
+
+```bash
+base64 -w 0 ~/.kube/config
+```
+
+### 2) GitOps pipeline (Argo CD pull model)
+
+Flow:
+
+1. Developer pushes code
+2. GitHub Actions builds and pushes images
+3. Pipeline updates Kubernetes manifests in Git and pushes commit
+4. Argo CD detects Git change and syncs to cluster
+
+Workflow:
+
+- `.github/workflows/gitops-cicd.yml`
+
+Required GitHub secrets:
+
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
+
+### 3) Install Argo CD
 
 Install Argo CD:
 
@@ -370,6 +399,28 @@ kubectl apply -f argocd-app.yaml
 ```
 
 Before applying, update `argocd-app.yaml` with your GitHub repo URL.
+
+### 4) Run a fair performance comparison
+
+Use the same app change for both pipelines (for example add one line in `vote/app.py`), then compare:
+
+- **Metric A (Pipeline duration):**
+  - From GitHub Actions run page:
+    - traditional workflow total duration
+    - gitops workflow total duration
+- **Metric B (Time to live app update):**
+  - Start timer at git push
+  - Stop timer when new app version is available on `http://localhost:31000`
+- **Metric C (Operational model):**
+  - Traditional: CI tool needs direct cluster credentials
+  - GitOps: ArgoCD in cluster pulls from Git (no direct deploy from CI)
+
+Suggested result table:
+
+| Model | Build+Push time | Deploy time | Total time | Cluster credential in CI |
+|---|---:|---:|---:|---|
+| Traditional CI/CD | X min | Y min | X+Y min | Yes |
+| GitOps (ArgoCD) | X min | Z min (sync delay) | X+Z min | No |
 
 ---
 

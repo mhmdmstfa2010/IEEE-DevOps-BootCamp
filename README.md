@@ -220,3 +220,174 @@ kubectl delete namespace vote
 kind delete cluster --name voting-cluster
 docker compose down -v
 ```
+
+## 11) Day2 Kubernetes Topic-to-Demo Mapping
+
+Use this section while teaching: each Kubernetes topic is followed by a direct live practice on the voting app.
+
+### 11.1 Core objects: Node, Namespace, Pod, Deployment, ReplicaSet, Service
+
+```bash
+kubectl get nodes
+kubectl get ns
+kubectl get all -n vote
+kubectl get deploy,rs,pods,svc -n vote
+```
+
+### 11.2 Imperative vs Declarative
+
+Imperative:
+
+```bash
+kubectl create deployment demo-nginx --image=nginx
+kubectl get deploy demo-nginx
+kubectl delete deployment demo-nginx
+```
+
+Declarative:
+
+```bash
+kubectl apply -f k8s-specifications/ -n vote
+```
+
+### 11.3 Inspect pod lifecycle and troubleshooting
+
+```bash
+kubectl get pods -n vote
+kubectl describe pod -n vote <pod-name>
+kubectl logs -n vote <pod-name>
+kubectl exec -it -n vote <pod-name> -- sh
+```
+
+### 11.4 Self-healing and scaling
+
+```bash
+kubectl scale deployment vote --replicas=3 -n vote
+kubectl get pods -n vote -o wide
+kubectl delete pod -n vote <one-vote-pod>
+kubectl get pods -n vote
+```
+
+### 11.5 Rolling update and rollback
+
+```bash
+kubectl set image deployment/vote vote=nginx:latest -n vote
+kubectl rollout status deployment/vote -n vote
+kubectl rollout history deployment/vote -n vote
+kubectl rollout undo deployment/vote -n vote
+```
+
+### 11.6 Service types and networking
+
+```bash
+kubectl get svc -n vote
+kubectl describe svc vote -n vote
+kubectl describe svc result -n vote
+```
+
+### 11.7 Ingress on the voting app
+
+Install ingress controller first, then apply this ingress:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: voting-ingress
+  namespace: vote
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: voting.local
+      http:
+        paths:
+          - path: /vote
+            pathType: Prefix
+            backend:
+              service:
+                name: vote
+                port:
+                  number: 5000
+          - path: /result
+            pathType: Prefix
+            backend:
+              service:
+                name: result
+                port:
+                  number: 5001
+```
+
+### 11.8 Multi-container pod (shared volume demo)
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: two-containers-demo
+  namespace: vote
+spec:
+  restartPolicy: Never
+  volumes:
+    - name: shared-area
+      emptyDir: {}
+  containers:
+    - name: nginx-container
+      image: nginx
+      volumeMounts:
+        - name: shared-area
+          mountPath: /usr/share/nginx/html
+    - name: helper-container
+      image: busybox
+      command: ["/bin/sh", "-c"]
+      args: ["echo Hello from helper container > /shared/index.html && sleep 3600"]
+      volumeMounts:
+        - name: shared-area
+          mountPath: /shared
+```
+
+### 11.9 PV and PVC
+
+```bash
+kubectl get pv,pvc -n vote
+kubectl describe deployment db -n vote
+kubectl get storageclass
+```
+
+### 11.10 ConfigMap
+
+```bash
+kubectl create configmap vote-config -n vote \
+  --from-literal=APP_TITLE="IEEE Bootcamp Voting App" \
+  --from-literal=APP_THEME="blue"
+kubectl get configmap vote-config -n vote -o yaml
+```
+
+### 11.11 Secret
+
+```bash
+kubectl create secret generic db-secret -n vote \
+  --from-literal=POSTGRES_USER=postgres \
+  --from-literal=POSTGRES_PASSWORD=postgres
+kubectl get secret db-secret -n vote
+kubectl describe secret db-secret -n vote
+```
+
+### 11.12 Stateful vs Stateless and StatefulSet
+
+- Stateless in this app: `vote`, `result`, `worker`
+- Stateful in this app: `db`
+
+```bash
+kubectl get statefulset -A
+kubectl get pvc -A
+```
+
+### 11.13 Jobs and CronJobs
+
+```bash
+kubectl create job vote-once --image=busybox -- /bin/sh -c "echo one-time task; date"
+kubectl get jobs
+kubectl logs job/vote-once
+kubectl create cronjob vote-cron --image=busybox --schedule="*/5 * * * *" -- /bin/sh -c "date; echo bootcamp"
+kubectl get cronjobs
+```

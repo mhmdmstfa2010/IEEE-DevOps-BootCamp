@@ -15,5 +15,5 @@ spec:
         app: worker
     spec:
       containers:
-      - image: mohamed710/worker:v1
+      - image: mohamed710/worker:2738445ce0a0eb6030327420e715168698d158c4
         name: worker

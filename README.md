@@ -321,6 +321,79 @@ kubectl get cronjobs
 
 ## Day 3 - CI/CD and GitOps
 
+## Demo Steps for Students (Beginner Friendly)
+
+Follow these steps exactly during the bootcamp demo.
+
+### 1) Pick one branch (one pipeline per branch)
+
+- `main` -> bootcamp pipeline (`bootcamp-ci.yml`)
+- `traditinaaol-demo` -> traditional CI/CD (`traditional-cicd.yml`)
+- `gitops-demo` -> GitOps CI/CD (`gitops-cicd.yml`)
+
+Important: work on only one branch at a time. Each branch is prepared for one demo model.
+
+### 2) Checkout the branch you want to test
+
+```bash
+git fetch origin
+git checkout <branch-name>
+git pull origin <branch-name>
+```
+
+Examples:
+
+```bash
+git checkout traditinaaol-demo
+git pull origin traditinaaol-demo
+```
+
+```bash
+git checkout gitops-demo
+git pull origin gitops-demo
+```
+
+### 3) Make a very small app change
+
+Use the same type of change for everyone in the class (for fair comparison).
+Example: add one simple line in `vote/app.py` (or update text in a small file).
+
+### 4) Commit and push
+
+```bash
+git add .
+git commit -m "demo: small app change"
+git push origin <branch-name>
+```
+
+### 5) Watch GitHub Actions
+
+1. Open the repository on GitHub
+2. Go to **Actions**
+3. Open the latest run for your branch
+4. Wait until jobs are green
+
+### 6) Verify the app update
+
+- Open Vote app: `http://localhost:31000`
+- Open Result app: `http://localhost:31001`
+- Confirm your change appears
+
+### 7) Repeat on the second branch (for comparison)
+
+To compare Traditional vs GitOps fairly:
+
+- apply a similar small change
+- push to the other branch
+- compare pipeline duration and time to live update
+
+### Common mistakes to avoid
+
+- Pushing to the wrong branch
+- Forgetting GitHub secrets (`DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, etc.)
+- Changing many files at once (hard to compare results)
+- Testing both models with different app changes
+
 ### 1) Traditional CI/CD pipeline (build to full running app)
 
 Flow:

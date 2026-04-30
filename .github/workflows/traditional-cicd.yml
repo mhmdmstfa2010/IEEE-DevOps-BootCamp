@@ -65,13 +65,8 @@ jobs:
           kubectl -n vote set image deployment/result result=${{ secrets.DOCKERHUB_USERNAME }}/result:${{ github.sha }}
           kubectl -n vote set image deployment/worker worker=${{ secrets.DOCKERHUB_USERNAME }}/worker:${{ github.sha }}
 
-      - name: Wait for all deployments to be healthy
-        run: |
-          kubectl -n vote rollout status deployment/redis
-          kubectl -n vote rollout status deployment/db
-          kubectl -n vote rollout status deployment/vote
-          kubectl -n vote rollout status deployment/result
-          kubectl -n vote rollout status deployment/worker
+
 
       - name: Verify services are exposed
         run: kubectl -n vote get svc
+s

@@ -3,7 +3,7 @@ name: GitOps CI/CD (ArgoCD Pipeline)
 on:
   workflow_dispatch:
   push:
-    branches: ["main"]
+    branches: ["gitops-demo"]
 
 permissions:
   contents: write
@@ -34,7 +34,7 @@ jobs:
 
       - name: Apply Argo CD Application
         run: |
-          sed "s|https://github.com/YOUR_GITHUB_USERNAME/example-voting-app|${{ secrets.GITOPS_REPO_URL }}|g" argocd-app.yaml | kubectl apply -f -
+          sed "s|https://github.com/mhmdmstfa2010/IEEE-DevOps-BootCamp|${{ secrets.GITOPS_REPO_URL }}|g" argocd-app.yaml | kubectl apply -f -
 
   build-and-update-manifests:
     runs-on: ubuntu-latest

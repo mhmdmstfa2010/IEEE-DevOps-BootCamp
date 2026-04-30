@@ -46,7 +46,7 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/worker:${{ github.sha }}
 
       - name: Setup kubectl
-        uses: azure/setup-kubectl@v4
+        uses: azure/setup-kubectl@v4.1.0
 
       - name: Configure kubeconfig
         run: |

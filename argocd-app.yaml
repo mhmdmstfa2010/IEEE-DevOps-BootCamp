@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/YOUR_GITHUB_USERNAME/example-voting-app
+    repoURL: https://github.com/mhmdmstfa2010/IEEE-DevOps-BootCamp
     targetRevision: main
     path: k8s-specifications
   destination:

@@ -16,6 +16,7 @@ spec:
     spec:
       containers:
       - image: mohamed710/result:0617db23a7a434902f890157e7bddca126ecf601
+
         name: result
         ports:
         - containerPort: 80

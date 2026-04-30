@@ -69,4 +69,3 @@ jobs:
 
       - name: Verify services are exposed
         run: kubectl -n vote get svc
-s

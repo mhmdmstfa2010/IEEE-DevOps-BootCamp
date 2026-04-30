@@ -83,7 +83,6 @@ docker run -d --name result --network vote-net -p 8081:80 YOUR_DOCKERHUB_USERNAM
 ```
 
 Open:
-
 - Vote app: http://localhost:8080
 - Result app: http://localhost:8081
 

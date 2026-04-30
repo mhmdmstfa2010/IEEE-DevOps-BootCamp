@@ -3,7 +3,7 @@ name: Traditional CI/CD (Build to Running Cluster)
 on:
   workflow_dispatch:
   push:
-    branches: ["main"]
+    branches: ["traditional-demo"]
 
 jobs:
   build-push-deploy:

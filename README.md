@@ -321,13 +321,13 @@ kubectl get cronjobs
 
 ## Day 3 - CI/CD and GitOps
 
-### 1) Traditional CI/CD pipeline (direct deploy)
+### 1) Traditional CI/CD pipeline (build to full running app)
 
 Flow:
 
 1. Developer pushes code
 2. GitHub Actions builds and pushes images
-3. Same pipeline deploys directly to cluster using `kubectl set image`
+3. Same pipeline creates namespace, applies all manifests, updates app images, and waits until all deployments are healthy
 
 Workflow:
 
@@ -362,8 +362,17 @@ Required GitHub secrets:
 
 - `DOCKERHUB_USERNAME`
 - `DOCKERHUB_TOKEN`
+- `KUBE_CONFIG_DATA` (needed for Argo CD bootstrap job)
+- `GITOPS_REPO_URL` (example: `https://github.com/mhmdmstfa2010/IEEE-DevOps-BootCamp`)
+
+How this pipeline works:
+
+- On `workflow_dispatch`: bootstrap Argo CD on the cluster and apply `argocd-app.yaml`
+- On `push`: build images, push images, update manifests with new tags, commit and push (Argo CD then syncs)
 
 ### 3) Install Argo CD
+
+> Optional if you already run the bootstrap job from `.github/workflows/gitops-cicd.yml`.
 
 Install Argo CD:
 

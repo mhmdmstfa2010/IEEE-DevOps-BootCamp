@@ -1,4 +1,4 @@
-name: Traditional CI/CD (Direct Deploy)
+name: Traditional CI/CD (Build to Running Cluster)
 
 on:
   workflow_dispatch:
@@ -53,11 +53,25 @@ jobs:
           mkdir -p ~/.kube
           echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > ~/.kube/config
 
-      - name: Deploy directly to cluster (traditional CD)
+      - name: Create namespace if missing
+        run: kubectl get namespace vote || kubectl create namespace vote
+
+      - name: Apply full Kubernetes manifests
+        run: kubectl apply -f k8s-specifications/ -n vote
+
+      - name: Deploy latest app images directly (traditional CD)
         run: |
           kubectl -n vote set image deployment/vote vote=${{ secrets.DOCKERHUB_USERNAME }}/vote:${{ github.sha }}
           kubectl -n vote set image deployment/result result=${{ secrets.DOCKERHUB_USERNAME }}/result:${{ github.sha }}
           kubectl -n vote set image deployment/worker worker=${{ secrets.DOCKERHUB_USERNAME }}/worker:${{ github.sha }}
+
+      - name: Wait for all deployments to be healthy
+        run: |
+          kubectl -n vote rollout status deployment/redis
+          kubectl -n vote rollout status deployment/db
           kubectl -n vote rollout status deployment/vote
           kubectl -n vote rollout status deployment/result
           kubectl -n vote rollout status deployment/worker
+
+      - name: Verify services are exposed
+        run: kubectl -n vote get svc

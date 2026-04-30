@@ -65,7 +65,5 @@ jobs:
           kubectl -n vote set image deployment/result result=${{ secrets.DOCKERHUB_USERNAME }}/result:${{ github.sha }}
           kubectl -n vote set image deployment/worker worker=${{ secrets.DOCKERHUB_USERNAME }}/worker:${{ github.sha }}
 
-
-
       - name: Verify services are exposed
         run: kubectl -n vote get svc

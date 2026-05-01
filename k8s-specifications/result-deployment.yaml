@@ -15,7 +15,7 @@ spec:
         app: result
     spec:
       containers:
-      - image: mohamed710/result:f2f10e4c98ca89421f9f5a035bee38691ec4a8ff
+      - image: mohamed710/result:f1e2a8213a2624a1a257e9203a99a5f30fdc88a6
 
         name: result
         ports:

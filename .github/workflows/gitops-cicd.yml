@@ -34,7 +34,13 @@ jobs:
 
       - name: Apply Argo CD Application
         run: |
-          sed "s|https://github.com/mhmdmstfa2010/IEEE-DevOps-BootCamp|${{ secrets.GITOPS_REPO_URL }}|g" argocd-app.yaml | kubectl apply -f -
+          REPO_URL="${{ secrets.GITOPS_REPO_URL }}"
+          if [ -z "$REPO_URL" ]; then
+            REPO_URL="https://github.com/${{ github.repository }}"
+          fi
+          sed -e "s|repoURL: .*|repoURL: ${REPO_URL}|g" \
+              -e "s|targetRevision: .*|targetRevision: ${GITHUB_REF_NAME}|g" \
+              argocd-app.yaml | kubectl apply -f -
 
   build-and-update-manifests:
     runs-on: ubuntu-latest

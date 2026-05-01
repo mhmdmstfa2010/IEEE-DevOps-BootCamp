@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/mhmdmstfa2010/IEEE-DevOps-BootCamp
-    targetRevision: main
+    targetRevision: gitops-demo
     path: k8s-specifications
   destination:
     server: https://kubernetes.default.svc
